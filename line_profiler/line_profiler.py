@@ -147,6 +147,12 @@ class LineProfiler(CLineProfiler):
         lstats = self.get_stats()
         show_text(lstats.timings, lstats.unit, output_unit=output_unit, stream=stream, stripzeros=stripzeros)
 
+    def per_stats(self, stream=None, output_unit=None, stripzeros=False):
+        """ Show the gathered statistics.
+        """
+        lstats = self.get_stats()
+        get_res(lstats.timings, lstats.unit, output_unit=output_unit, stream=stream, stripzeros=stripzeros)
+
     def run(self, cmd):
         """ Profile a single executable statment in the main namespace.
         """
@@ -270,6 +276,58 @@ def show_func(filename, start_lineno, func_name, timings, unit,
         stream.write('\n')
     stream.write('\n')
 
+def get_per(filename, start_lineno, func_name, timings, unit,
+              output_unit=None, stream=None, stripzeros=False):
+    """ Get results (time persent) for a single function with dict return.
+    """
+    if stream is None:
+        stream = sys.stdout
+
+    d = {}
+    total_time = 0.0
+    linenos = []
+    for lineno, nhits, time in timings:
+        total_time += time
+        linenos.append(lineno)
+
+    if stripzeros and total_time == 0:
+        return
+
+    if output_unit is None:
+        output_unit = unit
+    scalar = unit / output_unit
+
+    if os.path.exists(filename) or is_ipython_kernel_cell(filename):
+        if os.path.exists(filename):
+            # Clear the cache to ensure that we get up-to-date results.
+            linecache.clearcache()
+        all_lines = linecache.getlines(filename)
+        sublines = inspect.getblock(all_lines[start_lineno - 1:])
+    else:
+        stream.write('\n')
+        stream.write(f'Could not find file {filename}\n')
+        stream.write('Are you sure you are running this program from the same directory\n')
+        stream.write('that you ran the profiler from?\n')
+        stream.write("Continuing without the function's contents.\n")
+        # Fake empty lines so we can see the timings, if not the code.
+        nlines = 1 if not linenos else max(linenos) - min(min(linenos), start_lineno) + 1
+        sublines = [''] * nlines
+    for lineno, nhits, time in timings:
+        if total_time == 0:  # Happens rarely on empty function
+            percent = ''
+        else:
+            percent = '%5.1f' % (100 * time / total_time)
+        d[lineno] = (nhits,
+                     '%5.1f' % (time * scalar),
+                     '%5.1f' % (float(time) * scalar / nhits),
+                     percent)
+    linenos = range(start_lineno, start_lineno + len(sublines))
+    empty = ('', '', '', '')
+    get = {}
+    for lineno, line in zip(linenos, sublines):
+        nhits, time, per_hit, percent = d.get(lineno, empty)
+        get[lineno] = persent
+    return get
 
 def show_text(stats, unit, output_unit=None, stream=None, stripzeros=False):
     """ Show text for the given timings.
@@ -287,6 +345,16 @@ def show_text(stats, unit, output_unit=None, stream=None, stripzeros=False):
                   output_unit=output_unit, stream=stream,
                   stripzeros=stripzeros)
 
+def get_res(stats, unit, output_unit=None, stream=None, stripzeros=False):
+    """ Get dict for the given time persent with line code key.
+    """
+    frame = []
+
+    for (fn, lineno, name), timings in sorted(stats.items()):
+        frame.append(get_per(fn, lineno, name, stats[fn, lineno, name], unit,
+                  output_unit=output_unit, stream=stream,
+                  stripzeros=stripzeros))
+    return frame
 
 def load_stats(filename):
     """ Utility function to load a pickled LineStats object from a given
