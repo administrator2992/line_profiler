@@ -348,6 +348,9 @@ def show_text(stats, unit, output_unit=None, stream=None, stripzeros=False):
 def get_res(stats, unit, output_unit=None, stream=None, stripzeros=False):
     """ Get dict for the given time persent with line code key.
     """
+    if stream is None:
+        stream = sys.stdout
+
     frame = []
 
     for (fn, lineno, name), timings in sorted(stats.items()):
