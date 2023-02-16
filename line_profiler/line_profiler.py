@@ -326,7 +326,7 @@ def get_per(filename, start_lineno, func_name, timings, unit,
     get = {}
     for lineno, line in zip(linenos, sublines):
         nhits, time, per_hit, percent = d.get(lineno, empty)
-        get[lineno] = persent
+        get[lineno] = percent
     return get
 
 def show_text(stats, unit, output_unit=None, stream=None, stripzeros=False):
