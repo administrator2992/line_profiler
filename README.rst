@@ -39,9 +39,9 @@ To profile a python script:
 Installation
 ============
 
-Only install by sources, you can use Git_::
+Only install by sources :
 
-    $ git clone https://github.com/administrator2992/line_profiler.git
+    $ pip install git+https://github.com/administrator2992/line_profiler.git
 
 You may also download source tarballs of any snapshot from that URL.
 
