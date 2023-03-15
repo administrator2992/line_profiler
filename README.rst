@@ -39,17 +39,9 @@ To profile a python script:
 Installation
 ============
 
-Releases of `line_profiler` can be installed using pip::
+Only install by sources, you can use Git_::
 
-    $ pip install line_profiler
-
-Installation while ensuring a compatible IPython version can also be installed using pip::
-
-    $ pip install line_profiler[ipython]
-
-To check out the development sources, you can use Git_::
-
-    $ git clone https://github.com/pyutils/line_profiler.git
+    $ git clone https://github.com/administrator2992/line_profiler.git
 
 You may also download source tarballs of any snapshot from that URL.
 
