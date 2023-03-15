@@ -151,7 +151,7 @@ class LineProfiler(CLineProfiler):
         """ Show the gathered statistics.
         """
         lstats = self.get_stats()
-        get_res(lstats.timings, lstats.unit, output_unit=output_unit, stream=stream, stripzeros=stripzeros)
+        return get_res(lstats.timings, lstats.unit, output_unit=output_unit, stream=stream, stripzeros=stripzeros)
 
     def run(self, cmd):
         """ Profile a single executable statment in the main namespace.
